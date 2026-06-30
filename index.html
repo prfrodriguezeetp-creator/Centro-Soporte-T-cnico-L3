@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Centro de Soporte Técnico L3</title>
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --cream-dark: #EDE6D6;
+    --orange: #E07A2F;
+    --orange-light: #F4A35A;
+    --orange-pale: #FDF0E3;
+    --brown: #7A4A1E;
+    --brown-dark: #4A2C0E;
+    --text: #2C1A08;
+    --text-mid: #5A3A18;
+    --text-muted: #9A7050;
+    --green: #3A7A3A;
+    --green-bg: #EAF3EA;
+    --red: #B83232;
+    --red-bg: #FAEAEA;
+    --blue: #2A5FA8;
+    --blue-bg: #E8EFF9;
+    --border: #D4C4A8;
+    --shadow: 0 2px 8px rgba(100,60,10,0.10);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--brown-dark);
+    color: #F5F0E8;
+    padding: 18px 18px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.3px; }
+  .header p { font-size: 11px; color: #C4A880; margin-top: 2px; }
+  .score-badge {
+    background: var(--orange);
+    color: white;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 70px;
+    text-align: center;
+    transition: transform 0.3s, background 0.3s;
+  }
+  .score-badge.pulse { animation: scorePulse 0.5s ease; }
+  @keyframes scorePulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.25); background: #3A7A3A; }
+  }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex;
+    background: var(--cream-dark);
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+  .tab.locked { color: #C4B090; cursor: default; }
+  .tab .lock-icon { font-size: 10px; }
+
+  /* SCREENS */
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+
+  /* SECTION CARD */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+
+  /* CADENA DE TRANSMISIÓN */
+  .chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 4px 0 8px;
+    scrollbar-width: none;
+  }
+  .chain::-webkit-scrollbar { display: none; }
+  .chain-block {
+    flex: 0 0 72px;
+    background: var(--orange-pale);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.18s, border-color 0.18s, background 0.18s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .chain-block:active, .chain-block.tapped {
+    transform: scale(0.94);
+    border-color: var(--orange);
+    background: #FDE8CC;
+  }
+  .chain-block .block-icon { font-size: 22px; }
+  .chain-block .block-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-top: 4px;
+    line-height: 1.2;
+  }
+  .chain-block .block-num {
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .chain-arrow {
+    flex: 0 0 18px;
+    text-align: center;
+    font-size: 16px;
+    color: var(--orange-light);
+    font-weight: 900;
+  }
+  .block-tooltip {
+    display: none;
+    background: var(--brown-dark);
+    color: #F5F0E8;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-top: 10px;
+    line-height: 1.5;
+    animation: fadeSlide 0.2s ease;
+  }
+  .block-tooltip.show { display: block; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .block-tooltip strong { color: var(--orange-light); }
+
+  /* SLIDER SECTION */
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .slider-label span { font-size: 13px; font-weight: 600; color: var(--text-mid); }
+  .temp-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--orange);
+    transition: color 0.4s;
+  }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 6px 0;
+    transition: background 0.3s;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--orange);
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  /* METRICS ROW */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .metric-box {
+    background: var(--orange-pale);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    padding: 10px 12px;
+    transition: background 0.4s, border-color 0.4s;
+  }
+  .metric-box.danger { background: var(--red-bg); border-color: #E0AAAA; }
+  .metric-box.ok { background: var(--green-bg); border-color: #AADAAA; }
+  .metric-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+  .metric-val {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--brown);
+    margin-top: 2px;
+    transition: color 0.4s;
+  }
+  .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  /* WARN BAR */
+  .warn-bar {
+    background: var(--red-bg);
+    border: 1.5px solid #E0AAAA;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 12px;
+    display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .warn-bar.show { display: block; }
+
+  /* TICKET */
+  .ticket-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ticket-num {
+    background: var(--brown-dark);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .ticket-status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .ticket-status.pending { background: #FEF3CD; color: #8A6A00; border: 1px solid #E0C860; }
+  .ticket-status.solved { background: var(--green-bg); color: var(--green); border: 1px solid #AADAAA; }
+  .ticket-msg {
+    background: var(--cream-dark);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  /* MCQ */
+  .mcq-question {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: 12px;
+    line-height: 1.45;
+  }
+  .mcq-options { display: flex; flex-direction: column; gap: 8px; }
+  .mcq-opt {
+    background: var(--cream);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-mid);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.18s, border-color 0.18s, transform 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+  }
+  .mcq-opt:active { transform: scale(0.97); }
+  .mcq-opt.correct {
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .mcq-opt.wrong {
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .mcq-opt:disabled { cursor: default; }
+  .mcq-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    animation: fadeSlide 0.25s ease;
+    line-height: 1.5;
+  }
+  .mcq-feedback.show { display: block; }
+  .mcq-feedback.correct-fb { background: var(--green-bg); color: var(--green); border: 1.5px solid #AADAAA; }
+  .mcq-feedback.wrong-fb { background: var(--red-bg); color: var(--red); border: 1.5px solid #E0AAAA; }
+
+  /* CONCLUSION */
+  .conclusion-box {
+    background: var(--orange-pale);
+    border: 2px solid var(--orange-light);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--brown-dark);
+    line-height: 1.65;
+    display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .conclusion-box.show { display: block; }
+  .conclusion-box strong { color: var(--orange); }
+
+  /* BUTTONS */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.12s, opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    margin-top: 12px;
+    letter-spacing: 0.3px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-orange { background: var(--orange); color: white; }
+  .btn-brown { background: var(--brown-dark); color: white; }
+  .btn-outline {
+    background: transparent;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1.5px;
+    background: var(--border);
+    margin: 14px 0;
+    border-radius: 2px;
+  }
+
+  /* BADGE */
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .badge-orange { background: #FDE8CC; color: var(--brown); border: 1px solid var(--orange-light); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid #A8C4F0; }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid #AADAAA; }
+
+  /* PROGRESS */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .progress-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--cream-dark);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--orange);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .progress-label { font-size: 12px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+  /* COMPLETION */
+  .completion-card {
+    text-align: center;
+    padding: 24px 16px;
+  }
+  .completion-card .big-icon { font-size: 52px; }
+  .completion-card h2 { font-size: 20px; font-weight: 800; color: var(--brown-dark); margin: 10px 0 6px; }
+  .completion-card p { font-size: 14px; color: var(--text-mid); }
+
+  /* THERMAL ANIMATION */
+  .thermal-visual {
+    width: 100%;
+    height: 80px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #EDF5ED 0%, #C0E4C0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 10px 0;
+    transition: background 0.6s;
+    border: 1.5px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .heat-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(230,100,20,0), rgba(230,100,20,0));
+    transition: background 0.6s;
+    pointer-events: none;
+  }
+
+  /* UNLOCK ANIMATION */
+  @keyframes unlockPop {
+    0% { transform: scale(0.7); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .unlock-anim { animation: unlockPop 0.45s ease forwards; }
+
+  /* STARS */
+  .stars { color: #E07A2F; font-size: 22px; letter-spacing: 4px; }
+
+  /* HINT */
+  .hint-box {
+    background: var(--blue-bg);
+    border: 1.5px solid #A8C4F0;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--blue);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div>
+      <h1>🛠 Centro Soporte Técnico L3</h1>
+      <p>Módulo 13 · Arquitectura de Conectividad</p>
+    </div>
+    <div class="score-badge" id="scoreBadge">⭐ 0 pts</div>
+  </div>
+</div>
+
+<div class="tabs" id="tabBar">
+  <button class="tab active" onclick="showTab(0)" id="tab0">📡 Cadena</button>
+  <button class="tab" onclick="showTab(1)" id="tab1">🌡️ Físico</button>
+  <button class="tab locked" id="tab2">🎫 T#001 <span class="lock-icon">🔒</span></button>
+  <button class="tab locked" id="tab3">🎫 T#002 <span class="lock-icon">🔒</span></button>
+  <button class="tab locked" id="tab4">🏆 T#003 <span class="lock-icon">🔒</span></button>
+</div>
+
+<!-- ===================== SCREEN 0: CADENA ===================== -->
+<div class="screen active" id="screen0">
+  <div class="card">
+    <div class="card-title">🔗 La cadena de transmisión</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Tocá cada bloque para descubrir su función. ¡Gana puntos!</p>
+    <div class="chain" id="chain">
+      <div class="chain-block" id="blk0" onclick="tapBlock(0)">
+        <div class="block-icon">💾</div>
+        <div class="block-name">Datos</div>
+        <div class="block-num">Bloque 1</div>
+      </div>
+      <div class="chain-arrow">▶</div>
+      <div class="chain-block" id="blk1" onclick="tapBlock(1)">
+        <div class="block-icon">📟</div>
+        <div class="block-name">Módem</div>
+        <div class="block-num">Bloque 2</div>
+      </div>
+      <div class="chain-arrow">▶</div>
+      <div class="chain-block" id="blk2" onclick="tapBlock(2)">
+        <div class="block-icon">🔌</div>
+        <div class="block-name">RF Front-End</div>
+        <div class="block-num">Bloque 3</div>
+      </div>
+      <div class="chain-arrow">▶</div>
+      <div class="chain-block" id="blk3" onclick="tapBlock(3)">
+        <div class="block-icon">📶</div>
+        <div class="block-name">Antena</div>
+        <div class="block-num">Bloque 4</div>
+      </div>
+    </div>
+    <div class="block-tooltip" id="blkTooltip"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧠 Pregunta del bloque</div>
+    <div id="chainQ">
+      <div class="hint-box">Tocá los 4 bloques arriba para desbloquear las preguntas.</div>
+    </div>
+  </div>
+
+  <div class="card" id="tab1UnlockCard" style="display:none;">
+    <div style="text-align:center; padding:8px 0;">
+      <div style="font-size:32px;">🎉</div>
+      <p style="font-size:14px; font-weight:700; color:var(--green); margin-top:6px;">¡Sección 2 desbloqueada!</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Avanzá a la pestaña "🌡️ Físico"</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 1: FÍSICO ===================== -->
+<div class="screen" id="screen1">
+  <div class="card">
+    <div class="card-title">🌡️ Simulador térmico</div>
+    <div class="slider-label">
+      <span>Temperatura del dispositivo</span>
+      <span class="temp-value" id="tempVal">25°C</span>
+    </div>
+    <input type="range" id="tempSlider" min="20" max="90" value="25" step="1" oninput="updateThermal()">
+    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-top:2px;">
+      <span>❄️ 20°C</span><span>🔥 90°C</span>
+    </div>
+
+    <div class="thermal-visual" id="thermalViz">
+      <span style="position:relative;z-index:1;" id="thermalEmoji">💻</span>
+      <div class="heat-overlay" id="heatOverlay"></div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-box ok" id="qamBox">
+        <div class="metric-label">Tasa de modulación</div>
+        <div class="metric-val" id="qamVal">1024-QAM</div>
+        <div class="metric-sub" id="qamSub">Perfecto ✓</div>
+      </div>
+      <div class="metric-box ok" id="pingBox">
+        <div class="metric-label">Ping / Latencia</div>
+        <div class="metric-val" id="pingVal">18 ms</div>
+        <div class="metric-sub" id="pingSub">Excelente ✓</div>
+      </div>
+    </div>
+
+    <div class="warn-bar" id="warnBar">
+      ⚠️ <strong>Thermal Throttling activo:</strong> el hardware reduce la potencia de antena para proteger el SoC.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 ¿Qué está pasando?</div>
+    <p id="thermalExplain" style="font-size:13px; color:var(--text-mid); line-height:1.65;">
+      A temperatura ideal, el chip procesa modulación <strong>1024-QAM</strong>: empaqueta 10 bits por símbolo con máxima densidad, como robots de almacén perfectamente coordinados.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧠 Comprobá tu entendimiento</div>
+    <div id="thermalQ" class="mcq-question">¿Por qué sube el ping cuando el teléfono se calienta?</div>
+    <div class="mcq-options" id="thermalOpts">
+      <button class="mcq-opt" onclick="answerThermal(0)">A · El router pierde señal por la temperatura del ambiente</button>
+      <button class="mcq-opt" onclick="answerThermal(1)">B · El SoC baja de 1024-QAM a 256-QAM para no dañarse, reduciendo datos por símbolo</button>
+      <button class="mcq-opt" onclick="answerThermal(2)">C · El proveedor de internet limita la conexión en horas pico</button>
+      <button class="mcq-opt" onclick="answerThermal(3)">D · El cable de red se expande con el calor</button>
+    </div>
+    <div class="mcq-feedback" id="thermalFb"></div>
+  </div>
+
+  <div class="card" id="t1UnlockCard" style="display:none;" class="unlock-anim">
+    <div style="text-align:center; padding:8px 0;">
+      <div style="font-size:32px;">🎫</div>
+      <p style="font-size:14px; font-weight:700; color:var(--green); margin-top:6px;">¡Ticket #001 desbloqueado!</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Avanzá a la pestaña "T#001"</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 2: TICKET 001 ===================== -->
+<div class="screen" id="screen2">
+  <div class="card">
+    <div class="ticket-header">
+      <span class="ticket-num">TICKET #001</span>
+      <span class="ticket-status pending" id="t001status">⏳ Pendiente</span>
+    </div>
+    <div class="ticket-msg">
+      "Hola! Acabo de comprar un router con Wi-Fi 7. Quiero que le instales el <strong>módulo Wi-Fi 7 a mi PC de escritorio y también a mi iPhone 13 Pro</strong>. ¿Cuánto me cobrás por la mano de obra de ambos trabajos?"
+    </div>
+    <div class="badge-row">
+      <span class="badge badge-blue">PC: módulo M.2</span>
+      <span class="badge badge-orange">iPhone: Arquitectura SoC</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔍 Analizá el caso</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Recordá los conceptos: el PC usa módulo M.2 (reemplazable), el iPhone usa SoC (integrado sin módulos sueltos).</p>
+    <div class="mcq-question">¿Qué trabajo podés aceptar y cuál debés rechazar?</div>
+    <div class="mcq-options" id="t001opts">
+      <button class="mcq-opt" onclick="answerT001(0)">A · Acepto ambos: reemplazo el módulo Wi-Fi en los dos dispositivos</button>
+      <button class="mcq-opt" onclick="answerT001(1)">B · Acepto el PC (módulo M.2 reemplazable), rechazo el iPhone (SoC integrado, imposible)</button>
+      <button class="mcq-opt" onclick="answerT001(2)">C · Rechazo ambos: ningún dispositivo admite cambios de hardware Wi-Fi</button>
+      <button class="mcq-opt" onclick="answerT001(3)">D · Solo acepto el iPhone porque Apple tiene mejores módulos disponibles</button>
+    </div>
+    <div class="mcq-feedback" id="t001fb"></div>
+  </div>
+
+  <div class="card" style="display:none;" id="t001respCard">
+    <div class="card-title">✉️ Tu respuesta al cliente</div>
+    <div class="conclusion-box show" id="t001conclusion">
+      <strong>PC de escritorio:</strong> ✅ Trabajo ACEPTADO. Instalamos un módulo Wi-Fi 7 M.2 (como una "tarjeta de red" que se inserta en la placa base). El hardware es modular, se puede upgradar sin cambiar la placa.<br><br>
+      <strong>iPhone 13 Pro:</strong> ❌ Trabajo RECHAZADO. El iPhone usa Arquitectura SoC (System on Chip): el módem Wi-Fi está fundido dentro del chip A15 Bionic. No existe módulo que desenchufar. Las mejoras solo llegan vía actualización OTA del fabricante (Apple).<br><br>
+      <em>No se trata de voluntad del técnico, es la física del diseño.</em>
+    </div>
+    <div id="t002UnlockCard" style="display:none; text-align:center; padding-top:12px;">
+      <div style="font-size:32px;">🎫</div>
+      <p style="font-size:14px; font-weight:700; color:var(--green); margin-top:6px;">¡Ticket #002 desbloqueado!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 3: TICKET 002 ===================== -->
+<div class="screen" id="screen3">
+  <div class="card">
+    <div class="ticket-header">
+      <span class="ticket-num">TICKET #002</span>
+      <span class="ticket-status pending" id="t002status">⏳ Escalado L3</span>
+    </div>
+    <div class="ticket-msg">
+      "Instalaron un router nuevo pero es una basura. Juego Call of Duty Mobile en gráficos Ultra. Los primeros 20 minutos voy perfecto a <strong>20ms</strong>. Pero cuando llevo media hora, el teléfono está <strong>hirviendo</strong>, el ping sube a <strong>150ms</strong> y sufro desconexiones. ¡Exijo cambio de router!"
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌡️ Reproducí el problema</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Mové el slider para simular la temperatura del teléfono del cliente durante el gaming.</p>
+    <div class="slider-label">
+      <span style="font-size:13px; font-weight:600;">Tiempo de juego</span>
+      <span class="temp-value" id="gameTime">0 min</span>
+    </div>
+    <input type="range" id="gameSlider" min="0" max="60" value="0" step="5" oninput="updateGame()">
+    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-top:2px;">
+      <span>⚡ Inicio</span><span>🔥 60 min</span>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-box" id="gameQamBox">
+        <div class="metric-label">Modulación</div>
+        <div class="metric-val" id="gameQam">1024-QAM</div>
+        <div class="metric-sub" id="gameQamSub">Óptimo</div>
+      </div>
+      <div class="metric-box" id="gamePingBox">
+        <div class="metric-label">Ping</div>
+        <div class="metric-val" id="gamePing">20 ms</div>
+        <div class="metric-sub" id="gamePingSub">Perfecto</div>
+      </div>
+    </div>
+    <div class="warn-bar" id="gameWarn">
+      🔥 <strong>SoC a más de 45°C:</strong> Thermal Throttling activado. La antena reduce potencia. El router sigue funcionando igual.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧠 El diagnóstico</div>
+    <div class="mcq-question">¿Cuál es la causa REAL del lag a los 30 minutos?</div>
+    <div class="mcq-options" id="t002opts">
+      <button class="mcq-opt" onclick="answerT002(0)">A · El router nuevo tiene un firmware defectuoso</button>
+      <button class="mcq-opt" onclick="answerT002(1)">B · El ISP (proveedor de internet) limita ancho de banda en gaming</button>
+      <button class="mcq-opt" onclick="answerT002(2)">C · El SoC del smartphone supera 45°C y activa Thermal Throttling, bajando de 1024-QAM a 256-QAM</button>
+      <button class="mcq-opt" onclick="answerT002(3)">D · El juego consume demasiada RAM y satura la red</button>
+    </div>
+    <div class="mcq-feedback" id="t002fb"></div>
+  </div>
+
+  <div class="card" style="display:none;" id="t002conclusionCard">
+    <div class="card-title">💬 Respuesta al cliente</div>
+    <div class="conclusion-box show">
+      El router <strong>no tiene ninguna falla</strong>. El problema es tu teléfono protegiéndose a sí mismo.<br><br>
+      Después de 30 min de gráficos Ultra, el SoC supera los <strong>45°C</strong>. El hardware activa <strong>Thermal Throttling</strong>: reduce la potencia de la antena para no dañar el chip. Esto obliga al sistema a bajar de <strong>1024-QAM</strong> (ultrarrápido) a <strong>256-QAM</strong> (torpe y lento), reduciendo 4x los datos por símbolo.<br><br>
+      <strong>Solución:</strong> Bajar gráficos, enfriar el dispositivo, o quitar la funda durante gaming intenso. No cambiar el router.
+    </div>
+    <div id="t003UnlockCard" style="display:none; text-align:center; padding-top:12px;">
+      <div style="font-size:32px;">🏆</div>
+      <p style="font-size:14px; font-weight:700; color:var(--green); margin-top:6px;">¡Desafío Final desbloqueado!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 4: TICKET 003 FINAL ===================== -->
+<div class="screen" id="screen4">
+  <div class="card" style="background: linear-gradient(135deg, #FDF0E3, #F5F0E8);">
+    <div class="ticket-header">
+      <span class="ticket-num">TICKET #003</span>
+      <span class="ticket-status pending" id="t003status">⏳ Desafío Final</span>
+    </div>
+    <div style="text-align:center; margin-bottom:10px;">
+      <div style="font-size:36px;">⏱️</div>
+      <p style="font-size:14px; font-weight:700; color:var(--brown-dark);">5 minutos en terreno</p>
+    </div>
+    <div class="ticket-msg">
+      Visita a domicilio. El cliente se queja de <strong>"baja señal Wi-Fi general"</strong>. Tenés frente a vos su <strong>PC de escritorio</strong> y su <strong>smartphone Android</strong> corriendo benchmark. Ambos muestran sólo 1 raya de Wi-Fi.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🖥️ Plan PC — Diagnóstico mecánico</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">El PC usa módulo M.2. ¿Cuál es el PRIMER componente físico que revisás?</p>
+    <div class="mcq-options" id="pcOpts">
+      <button class="mcq-opt" onclick="answerPC(0)">A · Actualizo Windows primero</button>
+      <button class="mcq-opt" onclick="answerPC(1)">B · Verifico los cables coaxiales U.FL del módulo M.2 (pueden estar sueltos)</button>
+      <button class="mcq-opt" onclick="answerPC(2)">C · Cambio el router directamente</button>
+      <button class="mcq-opt" onclick="answerPC(3)">D · Reinicio el módem del ISP</button>
+    </div>
+    <div class="mcq-feedback" id="pcFb"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📱 Plan Smartphone — Diagnóstico sistémico</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">El Android usa SoC (no hay módulos sueltos). ¿Qué verificás antes de culpar al router?</p>
+    <div class="mcq-options" id="spOpts">
+      <button class="mcq-opt" onclick="answerSP(0)">A · Solo verifico si hay Thermal Throttling severo midiendo la temperatura del chasis</button>
+      <button class="mcq-opt" onclick="answerSP(1)">B · Retiro fundas metálicas o magnéticas que bloqueen las antenas de chasis, y mido temperatura del dispositivo</button>
+      <button class="mcq-opt" onclick="answerSP(2)">C · Reinstalo la app de Wi-Fi</button>
+      <button class="mcq-opt" onclick="answerSP(3)">D · Cambio la SIM card</button>
+    </div>
+    <div class="mcq-feedback" id="spFb"></div>
+  </div>
+
+  <div class="card" style="display:none;" id="finalConclusionCard">
+    <div class="card-title">🏆 Conclusión técnica profesional</div>
+    <div class="conclusion-box show">
+      <strong>Regla de Oro del Técnico L3:</strong><br><br>
+      🖥️ <strong>En PC:</strong> Diagnosticamos <em>componentes mecánicos</em>. Cables coaxiales, módulo M.2, antenas externas. El hardware es modular y reemplazable.<br><br>
+      📱 <strong>En Smartphone:</strong> Diagnosticamos <em>condiciones físicas y térmicas</em>. Fundas bloqueantes, temperatura del chasis, Thermal Throttling. El hardware es cerrado, no hay módulos que sustituir.<br><br>
+      💡 El usuario promedio culpa al ISP. El técnico amateur culpa al software. <strong>Vos sos técnico de hardware: la conectividad es pura termodinámica, silicio, cobre y antenas.</strong>
+    </div>
+    <div id="finalComplete" style="display:none;">
+      <div class="divider"></div>
+      <div class="completion-card">
+        <div class="big-icon">🎓</div>
+        <h2>¡Módulo L3 Completado!</h2>
+        <div class="stars" id="finalStars">⭐⭐⭐</div>
+        <p id="finalMsg" style="margin-top:8px;"></p>
+        <div class="metric-box ok" style="margin-top:14px; text-align:center;">
+          <div class="metric-label">Puntuación final</div>
+          <div class="metric-val" id="finalScore" style="font-size:28px;">0 pts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var score = 0;
+  var blocksExplored = new Set();
+  var chainAnswered = false;
+  var thermalAnswered = false;
+  var t001answered = false;
+  var t001respShown = false;
+  var t002answered = false;
+  var t002conclusionShown = false;
+  var pcAnswered = false;
+  var spAnswered = false;
+
+  var blockData = [
+    {
+      name: "Bloque 1: Datos (Baseband)",
+      desc: "<strong>El origen digital.</strong> Procesa la información en formato 0s y 1s. Es el punto de partida: todo empieza como dato digital puro antes de convertirse en señal de radio."
+    },
+    {
+      name: "Bloque 2: Módem",
+      desc: "<strong>El Traductor.</strong> Convierte bits digitales en ondas de radio analógicas (y viceversa). Aquí ocurre la modulación: 1024-QAM significa 10 bits por símbolo. Es la inteligencia matemática de la conexión."
+    },
+    {
+      name: "Bloque 3: RF Front-End",
+      desc: "<strong>El Músculo.</strong> Amplifica la señal de radio antes de emitirla y filtra el ruido al recibirla. Si la señal es débil, este bloque no puede compensarlo: la física manda."
+    },
+    {
+      name: "Bloque 4: Antena",
+      desc: "<strong>El Medio Físico.</strong> Trazas de cobre o cables que emiten energía electromagnética pura al aire. En PC son coaxiales desenchufables. En smartphone son pistas grabadas en el chasis."
+    }
+  ];
+
+  var chainQuestions = [
+    {
+      q: "¿Qué bloque convierte los bits digitales en ondas de radio analógicas?",
+      opts: ["Bloque 1: Datos", "Bloque 2: Módem", "Bloque 3: RF Front-End", "Bloque 4: Antena"],
+      correct: 1,
+      fb: "✅ ¡Correcto! El Módem es el 'traductor': aplica la modulación (ej: 1024-QAM) para convertir bits en ondas. Sin él, la antena no tendría señal que emitir.",
+      wrong: "❌ Revisá el bloque 2. El Módem es el que realiza la conversión digital-analógica mediante modulación."
+    }
+  ];
+
+  function tapBlock(i) {
+    var el = document.getElementById('blk' + i);
+    el.classList.add('tapped');
+    setTimeout(function() { el.classList.remove('tapped'); }, 200);
+
+    var tip = document.getElementById('blkTooltip');
+    tip.innerHTML = '<strong>' + blockData[i].name + '</strong><br>' + blockData[i].desc;
+    tip.classList.add('show');
+
+    if (!blocksExplored.has(i)) {
+      blocksExplored.add(i);
+      addScore(5, '¡Bloque explorado!');
+    }
+
+    if (blocksExplored.size === 4 && !chainAnswered) {
+      showChainQuestion();
+    }
+  }
+
+  function showChainQuestion() {
+    var q = chainQuestions[0];
+    var html = '<div class="mcq-question">' + q.q + '</div><div class="mcq-options" id="chainOpts">';
+    for (var i = 0; i < q.opts.length; i++) {
+      html += '<button class="mcq-opt" onclick="answerChain(' + i + ')">' + String.fromCharCode(65+i) + ' · ' + q.opts[i] + '</button>';
+    }
+    html += '</div><div class="mcq-feedback" id="chainFb"></div>';
+    document.getElementById('chainQ').innerHTML = html;
+  }
+
+  function answerChain(i) {
+    if (chainAnswered) return;
+    chainAnswered = true;
+    var q = chainQuestions[0];
+    var opts = document.querySelectorAll('#chainOpts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('chainFb');
+    if (i === q.correct) {
+      opts[i].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = q.fb;
+      addScore(20, '¡Respuesta correcta!');
+      unlockTab(1);
+      document.getElementById('tab1UnlockCard').style.display = 'block';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[q.correct].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = q.wrong;
+      unlockTab(1);
+      document.getElementById('tab1UnlockCard').style.display = 'block';
+    }
+  }
+
+  function updateThermal() {
+    var t = parseInt(document.getElementById('tempSlider').value);
+    document.getElementById('tempVal').textContent = t + '°C';
+
+    var ratio = (t - 20) / 70;
+    var r = Math.round(ratio * 220);
+    var g = Math.round(180 - ratio * 130);
+    document.getElementById('heatOverlay').style.background =
+      'linear-gradient(135deg, rgba(' + r + ',' + g + ',20,0), rgba(' + r + ',' + g + ',20,' + (ratio * 0.45) + '))';
+
+    var emoji = t < 35 ? '💻' : t < 55 ? '🥵' : '🔥';
+    document.getElementById('thermalEmoji').textContent = emoji;
+
+    var qamBox = document.getElementById('qamBox');
+    var pingBox = document.getElementById('pingBox');
+    var warn = document.getElementById('warnBar');
+    var explain = document.getElementById('thermalExplain');
+
+    if (t < 40) {
+      document.getElementById('qamVal').textContent = '1024-QAM';
+      document.getElementById('qamSub').textContent = 'Perfecto ✓';
+      qamBox.className = 'metric-box ok';
+      var ping = 15 + Math.round((t-20)*0.1);
+      document.getElementById('pingVal').textContent = ping + ' ms';
+      document.getElementById('pingSub').textContent = 'Excelente ✓';
+      pingBox.className = 'metric-box ok';
+      warn.className = 'warn-bar';
+      explain.innerHTML = 'A temperatura ideal, el chip procesa modulación <strong>1024-QAM</strong>: empaqueta 10 bits por símbolo con máxima densidad, como robots de almacén perfectamente coordinados.';
+    } else if (t < 60) {
+      document.getElementById('qamVal').textContent = '256-QAM';
+      document.getElementById('qamSub').textContent = '⚠️ Reducida';
+      qamBox.className = 'metric-box danger';
+      var ping2 = 40 + Math.round((t-40)*2.5);
+      document.getElementById('pingVal').textContent = ping2 + ' ms';
+      document.getElementById('pingSub').textContent = '⚠️ Lag';
+      pingBox.className = 'metric-box danger';
+      warn.className = 'warn-bar show';
+      explain.innerHTML = '<strong>Thermal Throttling activo.</strong> El SoC supera 45°C y baja a <strong>256-QAM</strong>: solo 8 bits por símbolo. Los robots del almacén empiezan a tropezar. El ping sube. El router <em>no tiene la culpa</em>.';
+    } else {
+      document.getElementById('qamVal').textContent = '64-QAM';
+      document.getElementById('qamSub').textContent = '🔴 Crítica';
+      qamBox.className = 'metric-box danger';
+      var ping3 = 100 + Math.round((t-60)*2);
+      document.getElementById('pingVal').textContent = ping3 + ' ms';
+      document.getElementById('pingSub').textContent = '🔴 Inutilizable';
+      pingBox.className = 'metric-box danger';
+      warn.className = 'warn-bar show';
+      explain.innerHTML = '<strong>⚠️ Throttling severo.</strong> Bajó a <strong>64-QAM</strong> (6 bits/símbolo). El hardware protege su propia vida. Ping superior a 100ms: gaming imposible. Solución: enfriar el dispositivo.';
+    }
+  }
+
+  function answerThermal(i) {
+    if (thermalAnswered) return;
+    thermalAnswered = true;
+    var opts = document.querySelectorAll('#thermalOpts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('thermalFb');
+    if (i === 1) {
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = '✅ ¡Exacto! El SoC baja la modulación de 1024-QAM a 256-QAM para protegerse del calor, reduciendo la cantidad de bits por símbolo y aumentando la latencia. Física pura.';
+      addScore(25, '¡Correcto! Termodinámica ✓');
+      unlockTab(2);
+      document.getElementById('t1UnlockCard').style.display = 'block';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ La respuesta correcta es B. El problema es térmico, no del router ni del ISP. El SoC reduce la modulación para protegerse.';
+      unlockTab(2);
+      document.getElementById('t1UnlockCard').style.display = 'block';
+    }
+  }
+
+  function answerT001(i) {
+    if (t001answered) return;
+    t001answered = true;
+    var opts = document.querySelectorAll('#t001opts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('t001fb');
+    var respCard = document.getElementById('t001respCard');
+    if (i === 1) {
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = '✅ ¡Perfecto diagnóstico! El PC tiene módulo M.2 extraíble. El iPhone tiene SoC integrado: es físicamente imposible cambiar el Wi-Fi sin cambiar todo el procesador.';
+      addScore(30, '¡Diagnóstico correcto!');
+      document.getElementById('t001status').textContent = '✅ Resuelto';
+      document.getElementById('t001status').className = 'ticket-status solved';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ Revisá los conceptos: el PC usa módulo M.2 reemplazable, el iPhone usa SoC donde el módem es inseparable del procesador A-Series.';
+    }
+    respCard.style.display = 'block';
+    unlockTab(3);
+    document.getElementById('t002UnlockCard').style.display = 'block';
+  }
+
+  function updateGame() {
+    var min = parseInt(document.getElementById('gameSlider').value);
+    document.getElementById('gameTime').textContent = min + ' min';
+
+    var gameQam = document.getElementById('gameQam');
+    var gameQamSub = document.getElementById('gameQamSub');
+    var gameQamBox = document.getElementById('gameQamBox');
+    var gamePing = document.getElementById('gamePing');
+    var gamePingSub = document.getElementById('gamePingSub');
+    var gamePingBox = document.getElementById('gamePingBox');
+    var gameWarn = document.getElementById('gameWarn');
+
+    if (min < 25) {
+      gameQam.textContent = '1024-QAM';
+      gameQamSub.textContent = 'Óptimo ✓';
+      gameQamBox.className = 'metric-box ok';
+      gamePing.textContent = '20 ms';
+      gamePingSub.textContent = 'Perfecto ✓';
+      gamePingBox.className = 'metric-box ok';
+      gameWarn.className = 'warn-bar';
+    } else if (min < 45) {
+      gameQam.textContent = '256-QAM';
+      gameQamSub.textContent = '⚠️ Reducida';
+      gameQamBox.className = 'metric-box danger';
+      var p = 70 + Math.round((min-25)*3);
+      gamePing.textContent = p + ' ms';
+      gamePingSub.textContent = '⚠️ Lag visible';
+      gamePingBox.className = 'metric-box danger';
+      gameWarn.className = 'warn-bar show';
+    } else {
+      gameQam.textContent = '64-QAM';
+      gameQamSub.textContent = '🔴 Crítica';
+      gameQamBox.className = 'metric-box danger';
+      var p2 = 130 + Math.round((min-45)*1.5);
+      gamePing.textContent = p2 + ' ms';
+      gamePingSub.textContent = '🔴 Desconexión';
+      gamePingBox.className = 'metric-box danger';
+      gameWarn.className = 'warn-bar show';
+    }
+  }
+
+  function answerT002(i) {
+    if (t002answered) return;
+    t002answered = true;
+    var opts = document.querySelectorAll('#t002opts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('t002fb');
+    if (i === 2) {
+      opts[2].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = '✅ ¡Diagnóstico L3 correcto! El SoC supera los 45°C y activa Thermal Throttling. La tasa de modulación baja de 1024-QAM a 256-QAM: el router no tiene la culpa.';
+      addScore(30, '¡Diagnóstico L3 aprobado!');
+      document.getElementById('t002status').textContent = '✅ Resuelto';
+      document.getElementById('t002status').className = 'ticket-status solved';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[2].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ El router es inocente. El problema es el Thermal Throttling del SoC: a 45°C+ el hardware baja la modulación para protegerse.';
+    }
+    document.getElementById('t002conclusionCard').style.display = 'block';
+    unlockTab(4);
+    document.getElementById('t003UnlockCard').style.display = 'block';
+  }
+
+  function answerPC(i) {
+    if (pcAnswered) return;
+    pcAnswered = true;
+    var opts = document.querySelectorAll('#pcOpts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('pcFb');
+    if (i === 1) {
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = '✅ ¡Exacto! Los cables coaxiales U.FL del módulo M.2 se sueltan con vibraciones o mal montaje. Son el cableado interno entre el módulo y las antenas externas. Revisarlo toma 30 segundos.';
+      addScore(20, '¡Plan PC correcto!');
+    } else {
+      opts[i].classList.add('wrong');
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ En PC el diagnóstico es mecánico primero. Los cables coaxiales U.FL del módulo M.2 son el primer punto de falla física antes de tocar software.';
+    }
+    checkFinalCompletion();
+  }
+
+  function answerSP(i) {
+    if (spAnswered) return;
+    spAnswered = true;
+    var opts = document.querySelectorAll('#spOpts .mcq-opt');
+    opts.forEach(function(o) { o.disabled = true; });
+    var fb = document.getElementById('spFb');
+    if (i === 1) {
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show correct-fb';
+      fb.textContent = '✅ ¡Protocolo L3 correcto! Una funda metálica o magnética bloquea físicamente las antenas grabadas en el chasis. Retirarla + medir temperatura cubre los dos vectores de falla en smartphones.';
+      addScore(20, '¡Plan Smartphone correcto!');
+    } else if (i === 0) {
+      opts[0].classList.add('wrong');
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ Casi. Medir temperatura es correcto, pero te faltó el factor externo: la funda metálica o magnética bloquea físicamente las antenas de chasis. Siempre ambos factores.';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[1].classList.add('correct');
+      fb.className = 'mcq-feedback show wrong-fb';
+      fb.textContent = '❌ En smartphones el diagnóstico es sistémico: factores físicos externos (fundas) y térmicos. No hay módulos que reinstalar.';
+    }
+    checkFinalCompletion();
+  }
+
+  function checkFinalCompletion() {
+    if (pcAnswered && spAnswered) {
+      document.getElementById('finalConclusionCard').style.display = 'block';
+      setTimeout(function() {
+        document.getElementById('finalComplete').style.display = 'block';
+        document.getElementById('t003status').textContent = '🏆 Completado';
+        document.getElementById('t003status').className = 'ticket-status solved';
+        document.getElementById('finalScore').textContent = score + ' pts';
+        var stars = score >= 100 ? '⭐⭐⭐' : score >= 70 ? '⭐⭐' : '⭐';
+        document.getElementById('finalStars').textContent = stars;
+        var msg = score >= 100
+          ? '¡Puntuación perfecta! Sos un técnico L3 de élite.' 
+          : score >= 70 
+          ? '¡Muy bien! Sólidos conocimientos de hardware de conectividad.'
+          : 'Completaste el módulo. Repasá los conceptos de SoC y Thermal Throttling.';
+        document.getElementById('finalMsg').textContent = msg;
+      }, 600);
+    }
+  }
+
+  function unlockTab(i) {
+    var tab = document.getElementById('tab' + i);
+    if (tab && tab.classList.contains('locked')) {
+      tab.classList.remove('locked');
+      tab.innerHTML = tab.innerHTML.replace(' <span class="lock-icon">🔒</span>', '');
+      tab.classList.add('unlock-anim');
+    }
+  }
+
+  function addScore(pts, label) {
+    score += pts;
+    var badge = document.getElementById('scoreBadge');
+    badge.textContent = '⭐ ' + score + ' pts';
+    badge.classList.remove('pulse');
+    void badge.offsetWidth;
+    badge.classList.add('pulse');
+  }
+
+  function showTab(i) {
+    var tabs = document.querySelectorAll('.tab');
+    var screens = document.querySelectorAll('.screen');
+    if (tabs[i].classList.contains('locked')) return;
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    screens.forEach(function(s) { s.classList.remove('active'); });
+    tabs[i].classList.add('active');
+    screens[i].classList.add('active');
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
